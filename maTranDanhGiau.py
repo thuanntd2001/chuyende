@@ -5,6 +5,9 @@ from nltk.tokenize import word_tokenize
 from bisect import bisect_left
 
 stop_words = set(stopwords.words('english'))
+lstVocab.sort()
+
+matrix = np.zeros([len(lstDoc) + 1, len(lstVocab), ], dtype=int)
 
 
 def search(alist, item):
@@ -16,12 +19,24 @@ def search(alist, item):
         return -1
 
 
-a = np.zeros([ len(lstDoc) + 1,len(lstVocab),], dtype=int)
-print(len(lstDoc))
-lstVocab.sort()
+def genQuery(query):
+    lstWord = np.zeros(len(lstVocab), dtype=int)
+    word_tokens = word_tokenize(query)
+    filtered_query = [w.upper() for w in word_tokens if not w.lower() in stop_words]
+    for strI in filtered_query:
+        j = search(lstVocab, strI)
+        # print(j)
+        if j != -1:
+            lstWord[j] = 1
+    return lstWord
+
+
+def doQuery(matrix, lstWord):
+    pass
+
 
 # print(lstVocab)
-for i in range( len(lstDoc)):
+for i in range(len(lstDoc)):
     doc = lstDoc[i]
 
     word_tokens = word_tokenize(doc)
@@ -34,4 +49,4 @@ for i in range( len(lstDoc)):
         j = search(lstVocab, strI)
         # print(j)
         if j != -1:
-            a[i, j] = 1
+            matrix[i, j] = 1
