@@ -2,9 +2,9 @@
 f = open("npl/term-vocab", "r")
 
 lstVocab = []
-lstDoc = [""] * 12000
-lstQuery = [""] * 100
 
+lstDoc = [""]
+lstQuery = [""]
 
 for i in f:
     record = i.split()
@@ -26,6 +26,8 @@ while True:
     try:
         strI = next(iterFile)
         i = int(strI)
+        lstDoc.append("")
+
         # print("doc i= ", i)
     except ValueError:
         print("format tai lieu ", i)
@@ -35,14 +37,10 @@ while True:
         break
 
     strI = next(iterFile)
-
     while "/" not in strI:
         lstDoc[i] += strI
-       # print(strI)
         strI = next(iterFile)
-    # print("xong doc", i)
 
-#print(lstDoc[1])
 f.close()
 
 
@@ -59,7 +57,8 @@ while True:
     try:
         strI = next(iterFile)
         i = int(strI)
-        # print("query i= ", i)
+        lstQuery.append("")
+
     except ValueError:
         print("format tai lieu ", i)
         break
@@ -71,9 +70,6 @@ while True:
 
     while "/" not in strI:
         lstQuery[i] += strI
-        # print(strI)
         strI = next(iterFile)
-    # print("xong query", i)
 
-#print(lstQuery[1])
 f.close()
