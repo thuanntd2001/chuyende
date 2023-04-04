@@ -1,3 +1,12 @@
+"""
+Nguyen Tran Duc Thuan
+MSSV: N19DCN203
+Vu Cao Ky
+MSSV: N19DCN048
+Vu Trung An
+MSSV: N19DCN003
+"""
+
 # doc lst tu vung
 f = open("npl/term-vocab", "r")
 

@@ -1,8 +1,19 @@
+"""
+Nguyen Tran Duc Thuan
+MSSV: N19DCN203
+Vu Cao Ky
+MSSV: N19DCN048
+Vu Trung An
+MSSV: N19DCN003
+"""
+
+
 import numpy as np
 from readValue import *
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from bisect import bisect_left
+
 
 stop_words = set(stopwords.words('english'))
 
@@ -81,7 +92,6 @@ for i in range(len(lstDoc)):
             matrix[j][i] = 1
 
 
-# print(matrix)
 lstKqQuery = []
 for i in range(len(lstQuery)):
     lstKqQuery.append(doQuery(matrix, list(genQuery(lstQuery[i]))))
@@ -89,3 +99,20 @@ for i in range(len(lstQuery)):
 
 for i in range(len(lstQuery)):
     print("query ",i,": ",lstKqQuery[i])
+
+
+# luu file
+
+#f = open("save.txt", "w")
+
+#for i in range(len(lstVocab)):
+#    f.write(lstVocab[i])
+#    f.write("\n")
+#    for j in matrix[i]:
+#
+#        f.write(str(j))
+#        f.write(" ")
+#  
+#    f.write("\n")
+#f.close()
+# print(matrix)
