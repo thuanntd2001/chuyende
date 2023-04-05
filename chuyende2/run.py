@@ -20,6 +20,8 @@ stop_words = set(stopwords.words('english'))
 lstVocab.sort()
 
 np.set_printoptions(threshold=np.inf)
+
+
 def search(alist, item):
     'Locate the leftmost value exactly equal to item'
     i = bisect_left(alist, item)
@@ -44,6 +46,21 @@ def genQuery(query):
     return lstWordIndex
 
 
+# giu nguyen so luong tu trung chi bo stopword
+def genQuery2(query):
+    lstWordIndex = []
+    word_tokens = word_tokenize(query)
+    filtered_query = [w.upper().strip() for w in word_tokens if not w.lower() in stop_words]
+
+    for strI in filtered_query:
+        j = search(lstVocab, strI)
+        if j != -1:
+            lstWordIndex.append(j)
+
+    # print(lstWordIndex)
+    return lstWordIndex
+
+
 # tra ve list result co so item bang voi lstTongDoc voi moi item la so luong cua tu vung trong doc o index tuong ung voi TongDoc
 def doFtd(term, lstDocTerm, lstTongDoc, lstDoc):
     result = [0] * len(lstTongDoc)
@@ -52,18 +69,40 @@ def doFtd(term, lstDocTerm, lstTongDoc, lstDoc):
         # print(doc)
         index = search(lstTongDoc, doc)
         if index != -1:
-            sl=lstDoc[int(doc)].count(term.lower())
+            sl = lstDoc[int(doc)].count(term.lower())
             # print(lstDoc[int(doc)])
             # print("sl ", sl)
             result[index] = sl
-            if sl==0 : print("co van de 0: ",sl)
+            if sl == 0: print("co van de 0: ", sl)
         else:
             print("list Tong Doc ko day du")
     return result
 
 
+def doFtdQuery(query, lstWordIndex, lstVocab):
+    lstFtdQuery = []
+    # print("term: ",term)
+    #print(query)
+    for term in lstWordIndex:
+        #print(lstVocab[term].lower())
+        sl = query.count(lstVocab[term].upper())
+        lstFtdQuery.append(sl)
+
+    return lstFtdQuery
+
+
+def logarithmQuery(query, lstWordIndex, lstVocab):
+    lstFtdQuery=doFtdQuery(query, lstWordIndex, lstVocab)
+    lstLogarithmQuery = []
+    for i in lstFtdQuery:
+        #print("i= ",i)
+        if i!=0:
+            lstLogarithmQuery.append(logarithm(i))
+    return lstLogarithmQuery
+
+
 # tao matrix ftdt theo query
-def doMatrix(query, lstDoc, lstTermDoc, lstVocab):
+def doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab):
     # list tat ca cac doc chua tu trong query
     lstTongDoc = []
 
@@ -92,13 +131,51 @@ def doMatrix(query, lstDoc, lstTermDoc, lstVocab):
         # list cac doc chua term co chi so lstWordIndex[j]
         lstDocTerm = lstTermDoc[lstWordIndex[j]].split()
         # print(lstDocTerm)
-        result = doFtd(lstVocab[lstWordIndex[j]], lstDocTerm,lstTongDoc, lstDoc)
+        result = doFtd(lstVocab[lstWordIndex[j]], lstDocTerm, lstTongDoc, lstDoc)
         # print(result)
 
         for i in range(len(lstTongDoc)):
             matrix[i, j] = result[i]
 
     return lstTongDoc, lstWordIndex, matrix
+
+
+def doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, N):
+    # chua idf cua tu co index theo lstWordIndex
+    lstIdf = []
+    for i in lstWordIndex:
+        lstIdf.append(idf(N, len(lstTermDoc[i].split())))
+        # print(len(lstTermDoc[i].split()))
+    # print(N)
+    # print(lstIdf)
+    h, c = matrix.shape
+    matrixTfIdf = np.zeros([h, c], dtype=float)
+
+    for i in range(h):
+        for j in range(c):
+            if matrix[i, j] != 0:
+                matrixTfIdf[i, j] = logarithm(matrix[i, j]) * lstIdf[j]
+    return matrixTfIdf
+
+def calSimCosChuanHoaCosin(matrixTfIdf,lstSmartQuery):
+    h, c = matrixTfIdf.shape
+    lstResultSim=[]
+    for i in range(h):
+        docI=matrixTfIdf[i]
+        lstResultSim.append(tichVoHuong(docI,lstSmartQuery))
+    #print(lstResultSim)
+    return lstResultSim
+
+def sortKetQua(lstTongDoc,lstResultSim):
+    lstTongDocSort=lstTongDoc.copy()
+    n=len(lstResultSim)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+
+            if lstResultSim[j] < lstResultSim[j + 1]:
+                lstResultSim[j], lstResultSim[j + 1] = lstResultSim[j + 1], lstResultSim[j]
+                lstTongDocSort[j], lstTongDocSort[j + 1] = lstTongDocSort[j + 1], lstTongDocSort[j]
+    return lstResultSim,lstTongDocSort
 
 
 # DS DOC CHUA full TU KHOA (tra theo index) ["DOC1 DOC2","DOC1 DOC3"]
@@ -108,6 +185,7 @@ iterFile = iter(f)
 strI = ""
 strI2 = ""
 
+#Doc File Chi Muc Nguoc De Tiet Kiem Thoi Gian tinh toan chi muc nguoc
 while True:
     try:
         strI = next(iterFile).strip()
@@ -118,20 +196,26 @@ while True:
         lstTermDoc[search(lstVocab, strI.upper())] = strI2
 
     except StopIteration as e:
-        print( "Stop iter")
         break
 # print(lstDoc)
 f.close()
 
 # print(lstTermDoc)
-
-lstTongDoc, lstWordIndex, matrix = doMatrix(lstQuery[3], lstDoc, lstTermDoc, lstVocab)
-print(lstTongDoc)
+q = 1
+query=lstQuery[q]
+lstTongDoc, lstWordIndex, matrix = doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
+# print(lstTongDoc)
+print("query: ",q)
 for i in lstWordIndex: print(lstVocab[i])
-print(matrix)
+# print(matrix)
 
 
-# lstWordIndex=genQuery(lstQuery[1])
-# print(lstWordIndex)
-# for i in lstWordIndex:
-#     print(lstVocab[i])
+matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
+lstSmartQuery=logarithmQuery(query, lstWordIndex, lstVocab)
+lstResultSim=calSimCosChuanHoaCosin(matrixTfIdf,lstSmartQuery)
+lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
+print(lstTongDocSort)
+print(lstResultSim2)
+print("//////////////////////////////////////////////////////////////////////////////////////")
+
+
