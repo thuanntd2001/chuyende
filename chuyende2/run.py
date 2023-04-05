@@ -202,20 +202,28 @@ f.close()
 
 # print(lstTermDoc)
 q = 1
-query=lstQuery[q]
-lstTongDoc, lstWordIndex, matrix = doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
-# print(lstTongDoc)
-print("query: ",q)
-for i in lstWordIndex: print(lstVocab[i])
-# print(matrix)
+for q in range(1,len(lstQuery)):
+    query=lstQuery[q]
+    lstTongDoc, lstWordIndex, matrix = doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
+    # print(lstTongDoc)
+    print("query: ",q)
+    print("------------------------------------")
+    print("TU KHOA: \n")
+
+    for i in lstWordIndex: print(lstVocab[i])
+    # print(matrix)
 
 
-matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
-lstSmartQuery=logarithmQuery(query, lstWordIndex, lstVocab)
-lstResultSim=calSimCosChuanHoaCosin(matrixTfIdf,lstSmartQuery)
-lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
-print(lstTongDocSort)
-print(lstResultSim2)
-print("//////////////////////////////////////////////////////////////////////////////////////")
+    matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
+    lstSmartQuery=logarithmQuery(query, lstWordIndex, lstVocab)
+    lstResultSim=calSimCosChuanHoaCosin(matrixTfIdf,lstSmartQuery)
+    lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
+    print("------------------------------------")
+    print("RANKING: ")
+    print(lstTongDocSort)
+    print("------------------------------------")
+    print("GIA TRI TICH VO HUONG: ")
+    print(lstResultSim2)
+    print("//////////////////////////////////////////////////////////////////////////////////////")
 
 
