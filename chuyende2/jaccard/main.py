@@ -1,3 +1,11 @@
+"""
+Nguyen Tran Duc Thuan
+MSSV: N19DCN203
+Vu Cao Ky
+MSSV: N19DCN048
+Vu Trung An
+MSSV: N19DCN003
+"""
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -138,6 +146,6 @@ def jaccaard(doc, quer, num):
     for i in range(num):
         if len(res) == 0:break
         new_val = max(res, key= lambda x: res[x])
-        res2.append(new_val)
+        res2.append(new_val+1)
         res.pop(new_val)
     return res2

@@ -46,19 +46,6 @@ def genQuery(query):
     return lstWordIndex
 
 
-# giu nguyen so luong tu trung chi bo stopword
-def genQuery2(query):
-    lstWordIndex = []
-    word_tokens = word_tokenize(query)
-    filtered_query = [w.upper().strip() for w in word_tokens if not w.lower() in stop_words]
-
-    for strI in filtered_query:
-        j = search(lstVocab, strI)
-        if j != -1:
-            lstWordIndex.append(j)
-
-    # print(lstWordIndex)
-    return lstWordIndex
 
 
 # tra ve list result co so item bang voi lstTongDoc voi moi item la so luong cua tu vung trong doc o index tuong ung voi TongDoc
@@ -122,8 +109,7 @@ def doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab):
     # Sx  lstTongDoc de tim kiem nhi phan
     lstTongDoc.sort()
 
-    # Sx lstWordIndeX de cho dep :)
-    # lstWordIndex.sort()
+    
 
     matrix = np.zeros([len(lstTongDoc), len(lstWordIndex)], dtype=int)
 
@@ -221,9 +207,9 @@ for q in range(1,len(lstQuery)):
     print("------------------------------------")
     print("RANKING: ")
     print(lstTongDocSort)
-    print("------------------------------------")
-    print("GIA TRI TICH VO HUONG: ")
-    print(lstResultSim2)
+#    print("------------------------------------")
+#    print("GIA TRI TICH VO HUONG: ")
+#    print(lstResultSim2)
     print("//////////////////////////////////////////////////////////////////////////////////////")
 
 

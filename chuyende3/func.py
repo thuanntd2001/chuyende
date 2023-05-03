@@ -40,11 +40,11 @@ def no(N, dft):
 # N  : là số tài liệu
 # dft: là số tài liệu chứa từ t
 def idf(N, dft):
-    return math.log10(N / dft)
+    return math.log10((N  + 0.5)/ (dft + 0.5))
 
 
 def p(N, dft):
-    return max(0, math.log10((N - dft) / dft))
+    return max(0, math.log10((N - dft) / dft))  
 
 
 #               Normalization

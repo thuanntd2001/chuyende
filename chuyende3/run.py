@@ -42,63 +42,14 @@ def genQuery(query):
         if j != -1:
             lstWordIndex.append(j)
 
-    # print(lstWordIndex)
+    print("in dex tu",lstWordIndex)
     return lstWordIndex
 
 
-# giu nguyen so luong tu trung chi bo stopword
-def genQuery2(query):
-    lstWordIndex = []
-    word_tokens = word_tokenize(query)
-    filtered_query = [w.upper().strip() for w in word_tokens if not w.lower() in stop_words]
-
-    for strI in filtered_query:
-        j = search(lstVocab, strI)
-        if j != -1:
-            lstWordIndex.append(j)
-
-    # print(lstWordIndex)
-    return lstWordIndex
 
 
-# tra ve list result co so item bang voi lstTongDoc voi moi item la so luong cua tu vung trong doc o index tuong ung voi TongDoc
-def doFtd(term, lstDocTerm, lstTongDoc, lstDoc):
-    result = [0] * len(lstTongDoc)
-    # print("term: ",term)
-    for doc in lstDocTerm:
-        # print(doc)
-        index = search(lstTongDoc, doc)
-        if index != -1:
-            sl = lstDoc[int(doc)].count(term.lower())
-            # print(lstDoc[int(doc)])
-            # print("sl ", sl)
-            result[index] = sl
-            if sl == 0: print("co van de 0: ", sl)
-        else:
-            print("list Tong Doc ko day du")
-    return result
 
 
-def doFtdQuery(query, lstWordIndex, lstVocab):
-    lstFtdQuery = []
-    # print("term: ",term)
-    #print(query)
-    for term in lstWordIndex:
-        #print(lstVocab[term].lower())
-        sl = query.count(lstVocab[term].upper())
-        lstFtdQuery.append(sl)
-
-    return lstFtdQuery
-
-
-def logarithmQuery(query, lstWordIndex, lstVocab):
-    lstFtdQuery=doFtdQuery(query, lstWordIndex, lstVocab)
-    lstLogarithmQuery = []
-    for i in lstFtdQuery:
-        #print("i= ",i)
-        if i!=0:
-            lstLogarithmQuery.append(logarithm(i))
-    return lstLogarithmQuery
 
 
 # tao matrix ftdt theo query
@@ -122,20 +73,23 @@ def doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab):
     # Sx  lstTongDoc de tim kiem nhi phan
     lstTongDoc.sort()
 
-    # Sx lstWordIndeX de cho dep :)
-    # lstWordIndex.sort()
 
     matrix = np.zeros([len(lstTongDoc), len(lstWordIndex)], dtype=int)
 
+
+
+
+# tao ra ma tran d trang 18 tai lieu
     for j in range(len(lstWordIndex)):
         # list cac doc chua term co chi so lstWordIndex[j]
         lstDocTerm = lstTermDoc[lstWordIndex[j]].split()
-        # print(lstDocTerm)
-        result = doFtd(lstVocab[lstWordIndex[j]], lstDocTerm, lstTongDoc, lstDoc)
-        # print(result)
+        # print("N= ",len(lstVocab))
+        # print("n= ",len(lstDocTerm))
 
-        for i in range(len(lstTongDoc)):
-            matrix[i, j] = result[i]
+
+        for i in lstDocTerm:
+            indexHang=search(lstTongDoc,i)
+            matrix[indexHang, j] = 1
 
     return lstTongDoc, lstWordIndex, matrix
 
@@ -154,15 +108,18 @@ def doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, N):
     for i in range(h):
         for j in range(c):
             if matrix[i, j] != 0:
-                matrixTfIdf[i, j] = logarithm(matrix[i, j]) * lstIdf[j]
+                matrixTfIdf[i, j] = matrix[i, j] * lstIdf[j]
     return matrixTfIdf
 
-def calSimCosChuanHoaCosin(matrixTfIdf,lstSmartQuery):
+def ketQuaDauTien(matrixTfIdf):
     h, c = matrixTfIdf.shape
     lstResultSim=[]
     for i in range(h):
         docI=matrixTfIdf[i]
-        lstResultSim.append(tichVoHuong(docI,lstSmartQuery))
+        tong = 0
+        for t in docI:
+            tong=tong+t
+        lstResultSim.append(tong)
     #print(lstResultSim)
     return lstResultSim
 
@@ -202,10 +159,13 @@ f.close()
 
 # print(lstTermDoc)
 q = 1
-for q in range(1,len(lstQuery)):
+#for q in range(1,len(lstQuery)):
+for q in range(1,2):
+
     query=lstQuery[q]
-    lstTongDoc, lstWordIndex, matrix = doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
-    # print(lstTongDoc)
+    lstTongDoc, lstWordIndex, matrix= doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
+
+
     print("query: ",q)
     print("------------------------------------")
     print("TU KHOA: \n")
@@ -215,8 +175,7 @@ for q in range(1,len(lstQuery)):
 
 
     matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
-    lstSmartQuery=logarithmQuery(query, lstWordIndex, lstVocab)
-    lstResultSim=calSimCosChuanHoaCosin(matrixTfIdf,lstSmartQuery)
+    lstResultSim=ketQuaDauTien(matrixTfIdf)
     lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
     print("------------------------------------")
     print("RANKING: ")
@@ -225,5 +184,4 @@ for q in range(1,len(lstQuery)):
     print("GIA TRI TICH VO HUONG: ")
     print(lstResultSim2)
     print("//////////////////////////////////////////////////////////////////////////////////////")
-
 
