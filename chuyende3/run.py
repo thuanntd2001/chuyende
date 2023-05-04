@@ -111,6 +111,8 @@ def doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, N):
                 matrixTfIdf[i, j] = matrix[i, j] * lstIdf[j]
     return matrixTfIdf
 
+
+
 def ketQuaDauTien(matrixTfIdf):
     h, c = matrixTfIdf.shape
     lstResultSim=[]
@@ -136,16 +138,54 @@ def sortKetQua(lstTongDoc,lstResultSim):
 
 
 
-def tinhPiRi(lstTongDocSort,slLay,lstTongDoc, lstWordIndex, lstTermDoc):
-    vSet=lstTongDocSort[:slLay]
-    for i in vSet:
-        
+def tinhPiRi(lstTongDocSort,slV,lstTongDoc, lstWordIndex, lstTermDoc, lenLstDoc):
+    vSet=lstTongDocSort[:slV]
+    lstResultRi=[]
+    lstResultPi=[]
+    lstResultCi=[]
+    for i in lstWordIndex:
+        pi=0
+        ri=0
+        slVI=0
 
-   
-    return 
+        lstDocTerm=lstTermDoc[i].split()
+        ni=len(lstDocTerm)
+        #print(lstDocTerm)
+        for j in vSet:
+            if search(lstDocTerm,j)!=-1:
+                slVI+=1
+        pi=(slVI+0.5)/(slV+1)
+        ri=(ni-slVI+0.5)/(lenLstDoc-slV+1)
+        lstResultPi.append(pi)
+        lstResultRi.append(ri)
+        ci=cI(pi,ri)
+        lstResultCi.append(ci)
 
+    print("vSet: ",vSet)
+
+
+
+
+
+    return lstResultCi
+def doMatrixRSV( lstResultCi, matrix):
+
+    h, c = matrix.shape
+    matrixRSV = np.zeros([h, c], dtype=float)
+
+    for i in range(h):
+        for j in range(c):
+            if matrix[i, j] != 0:
+                matrixRSV[i, j] = matrix[i, j] * lstResultCi[j]
+    return matrixRSV
+
+def compare2lst( lst1, lst2, n ):
+    for i in range(n):
+        if lst1[i] !=  lst2[i]: return False
+    return True
 
 if __name__ == "__main__":
+    slV=20
     # DS DOC CHUA full TU KHOA (tra theo index) ["DOC1 DOC2","DOC1 DOC3"]
     lstTermDoc = [""] * len(lstVocab)
     f = open("save.txt", "r")
@@ -171,7 +211,7 @@ if __name__ == "__main__":
     # print(lstTermDoc)
     q = 1
     #for q in range(1,len(lstQuery)):
-    for q in range(1,2):
+    for q in range(81,82):
 
         query=lstQuery[q]
         lstTongDoc, lstWordIndex, matrix= doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
@@ -180,23 +220,33 @@ if __name__ == "__main__":
         print("query: ",q)
         print("------------------------------------")
         print("TU KHOA: \n")
+        "lan 1 tinh lstTongDoc sort theo idf"
 
         for i in lstWordIndex: print(lstVocab[i])
         # print(matrix)
+        matrixTfIdf = doMatrixWtIdf(lstWordIndex, matrix, lstTermDoc, len(lstDoc))
+        lstResult = ketQuaDauTien(matrixTfIdf)
+        lstResult2, lstTongDocSort = sortKetQua(lstTongDoc, lstResult)
 
-
-        matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
-        lstResultSim=ketQuaDauTien(matrixTfIdf)
-        lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
-        print("------------------------------------")
-        print("RANKING: ")
-        print(lstTongDocSort)
-        print("------------------------------------")
-        print("GIA TRI TICH VO HUONG: ")
-        #print(lstResultSim2)
         print("//////////////////////////////////////////////////////////////////////////////////////")
 
-
+        done=False
+        while not done:
+            "2 tro di tinh lstTongDoc sort theo RSV"
+            oldVSet=lstTongDocSort[:slV]
+            ci= tinhPiRi(lstTongDocSort,slV,lstTongDoc,lstWordIndex,lstTermDoc,len(lstDoc))
+            RSVLstDoc=doMatrixRSV(ci,matrix)
+            RSVLst=ketQuaDauTien(RSVLstDoc)
+            #print(matrix)
+            lstResult2,lstTongDocSort=sortKetQua(lstTongDoc,RSVLst)
+            newVSet=lstTongDocSort[:slV]
+            done=compare2lst(oldVSet,newVSet,slV)
+            print("------------------------------------")
+            print("RANKING: ")
+            print(newVSet)
+            print("------------------------------------")
+            print("GIA TRI TICH VO HUONG: ")
+            #print(lstResult2)
 
 
 

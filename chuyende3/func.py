@@ -70,3 +70,9 @@ def tichVoHuong(vtA, vtB):
     for i in range(len(vtA)):
         tong+=vtA[i] * vtB[i]
     return tong
+
+
+
+#              Ci
+def cI(pi, ri):
+    return  math.log10(pi*(1 - ri) / ri*(1-pi))
