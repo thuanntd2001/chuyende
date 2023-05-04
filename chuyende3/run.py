@@ -135,53 +135,83 @@ def sortKetQua(lstTongDoc,lstResultSim):
     return lstResultSim,lstTongDocSort
 
 
-# DS DOC CHUA full TU KHOA (tra theo index) ["DOC1 DOC2","DOC1 DOC3"]
-lstTermDoc = [""] * len(lstVocab)
-f = open("save.txt", "r")
-iterFile = iter(f)
-strI = ""
-strI2 = ""
 
-#Doc File Chi Muc Nguoc De Tiet Kiem Thoi Gian tinh toan chi muc nguoc
-while True:
-    try:
-        strI = next(iterFile).strip()
-        # print(strI)
-        strI2 = next(iterFile).strip()
-        # print(strI2)
-        # DS DOC CHUA full TU KHOA (tra theo index) ["DOC1 DOC2","DOC1 DOC3"]
-        lstTermDoc[search(lstVocab, strI.upper())] = strI2
+def tinhPiRi(lstTongDocSort,slLay,lstTongDoc, lstWordIndex, lstTermDoc):
+    vSet=lstTongDocSort[:slLay]
+    for i in vSet:
+        
 
-    except StopIteration as e:
-        break
-# print(lstDoc)
-f.close()
-
-# print(lstTermDoc)
-q = 1
-#for q in range(1,len(lstQuery)):
-for q in range(1,2):
-
-    query=lstQuery[q]
-    lstTongDoc, lstWordIndex, matrix= doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
+   
+    return 
 
 
-    print("query: ",q)
-    print("------------------------------------")
-    print("TU KHOA: \n")
+if __name__ == "__main__":
+    # DS DOC CHUA full TU KHOA (tra theo index) ["DOC1 DOC2","DOC1 DOC3"]
+    lstTermDoc = [""] * len(lstVocab)
+    f = open("save.txt", "r")
+    iterFile = iter(f)
+    strI = ""
+    strI2 = ""
 
-    for i in lstWordIndex: print(lstVocab[i])
-    # print(matrix)
+    #Doc File Chi Muc Nguoc De Tiet Kiem Thoi Gian tinh toan chi muc nguoc
+    while True:
+        try:
+            strI = next(iterFile).strip()
+            # print(strI)
+            strI2 = next(iterFile).strip()
+            # print(strI2)
+            # DS DOC CHUA full TU KHOA (tra theo index) ["DOC1 DOC2","DOC1 DOC3"]
+            lstTermDoc[search(lstVocab, strI.upper())] = strI2
+
+        except StopIteration as e:
+            break
+    # print(lstDoc)
+    f.close()
+
+    # print(lstTermDoc)
+    q = 1
+    #for q in range(1,len(lstQuery)):
+    for q in range(1,2):
+
+        query=lstQuery[q]
+        lstTongDoc, lstWordIndex, matrix= doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
 
 
-    matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
-    lstResultSim=ketQuaDauTien(matrixTfIdf)
-    lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
-    print("------------------------------------")
-    print("RANKING: ")
-    print(lstTongDocSort)
-    print("------------------------------------")
-    print("GIA TRI TICH VO HUONG: ")
-    print(lstResultSim2)
-    print("//////////////////////////////////////////////////////////////////////////////////////")
+        print("query: ",q)
+        print("------------------------------------")
+        print("TU KHOA: \n")
+
+        for i in lstWordIndex: print(lstVocab[i])
+        # print(matrix)
+
+
+        matrixTfIdf = doMatrixWtIdf( lstWordIndex, matrix, lstTermDoc, len(lstDoc))
+        lstResultSim=ketQuaDauTien(matrixTfIdf)
+        lstResultSim2,lstTongDocSort=sortKetQua(lstTongDoc,lstResultSim)
+        print("------------------------------------")
+        print("RANKING: ")
+        print(lstTongDocSort)
+        print("------------------------------------")
+        print("GIA TRI TICH VO HUONG: ")
+        #print(lstResultSim2)
+        print("//////////////////////////////////////////////////////////////////////////////////////")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
