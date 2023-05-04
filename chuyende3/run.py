@@ -42,7 +42,7 @@ def genQuery(query):
         if j != -1:
             lstWordIndex.append(j)
 
-    print("in dex tu",lstWordIndex)
+
     return lstWordIndex
 
 
@@ -179,8 +179,8 @@ def doMatrixRSV( lstResultCi, matrix):
                 matrixRSV[i, j] = matrix[i, j] * lstResultCi[j]
     return matrixRSV
 
-def compare2lst( lst1, lst2, n ):
-    for i in range(n):
+def compare2lst( lst1, lst2):
+    for i in range(len(lst1)):
         if lst1[i] !=  lst2[i]: return False
     return True
 
@@ -211,14 +211,15 @@ if __name__ == "__main__":
     # print(lstTermDoc)
     q = 1
     #for q in range(1,len(lstQuery)):
-    for q in range(81,82):
+    for q in range(1,len(lstQuery)):
 
         query=lstQuery[q]
         lstTongDoc, lstWordIndex, matrix= doMatrixFtd(query, lstDoc, lstTermDoc, lstVocab)
 
 
-        print("query: ",q)
+
         print("------------------------------------")
+        print("query: ",q)
         print("TU KHOA: \n")
         "lan 1 tinh lstTongDoc sort theo idf"
 
@@ -229,10 +230,13 @@ if __name__ == "__main__":
         lstResult2, lstTongDocSort = sortKetQua(lstTongDoc, lstResult)
 
         print("//////////////////////////////////////////////////////////////////////////////////////")
-
+        gioiHan=0
+        gioiHanTren=10
         done=False
-        while not done:
+        while not done and gioiHan<gioiHanTren:
             "2 tro di tinh lstTongDoc sort theo RSV"
+            gioiHan+=1
+            print("lan lap so: ",gioiHan)
             oldVSet=lstTongDocSort[:slV]
             ci= tinhPiRi(lstTongDocSort,slV,lstTongDoc,lstWordIndex,lstTermDoc,len(lstDoc))
             RSVLstDoc=doMatrixRSV(ci,matrix)
@@ -240,14 +244,15 @@ if __name__ == "__main__":
             #print(matrix)
             lstResult2,lstTongDocSort=sortKetQua(lstTongDoc,RSVLst)
             newVSet=lstTongDocSort[:slV]
-            done=compare2lst(oldVSet,newVSet,slV)
-            print("------------------------------------")
+            done=compare2lst(oldVSet,newVSet)
+
             print("RANKING: ")
             print(newVSet)
             print("------------------------------------")
-            print("GIA TRI TICH VO HUONG: ")
-            #print(lstResult2)
-
+        if gioiHan >= gioiHanTren:        
+            print("vuot qua so lan lap")
+        else:      
+            print("Da hoi tu")
 
 
 
